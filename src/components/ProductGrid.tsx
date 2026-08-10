@@ -1,81 +1,133 @@
-import { ShoppingCart } from 'lucide-react';
+'use client';
 
-interface Product {
-  id: number;
-  title: string;
-  originalPrice: number;
-  offerPrice: number;
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { ShoppingCart } from 'lucide-react';
+import { useCartStore } from '@/store/cartStore';
+import { client } from '@/sanity/lib/client';
+import { PRODUCTS_QUERY } from '@/sanity/queries';
+import { createImageUrlBuilder } from '@sanity/image-url';
+import type { Image } from 'sanity';
+import { toast } from 'sonner';
+
+const builder = createImageUrlBuilder(client);
+
+function urlFor(source: Image) {
+  return builder.image(source);
 }
 
-const products: Product[] = [
-  {
-    id: 1,
-    title: 'AirPods Pro 2 - Cancelación de ruido activa',
-    originalPrice: 249,
-    offerPrice: 199,
-  },
-  {
-    id: 2,
-    title: 'Apple Watch Series 9 - GPS',
-    originalPrice: 399,
-    offerPrice: 349,
-  },
-  {
-    id: 3,
-    title: 'Samsung Galaxy Buds2 Pro',
-    originalPrice: 189,
-    offerPrice: 149,
-  },
-  {
-    id: 4,
-    title: 'Sony WH-1000XM5 - Auriculares',
-    originalPrice: 349,
-    offerPrice: 299,
-  },
-  {
-    id: 5,
-    title: 'Garmin Forerunner 265',
-    originalPrice: 449,
-    offerPrice: 399,
-  },
-  {
-    id: 6,
-    title: 'JBL Flip 6 - Portable Speaker',
-    originalPrice: 129,
-    offerPrice: 99,
-  },
-];
+interface Product {
+  _id: string;
+  title: string;
+  normalPrice: number;
+  offerPrice: number;
+  image?: Image;
+  description?: string;
+  gallery?: Image[];
+  rating?: number;
+  reviewsCount?: number;
+  features?: string[];
+  inStock?: boolean;
+}
 
 export default function ProductGrid() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const addItem = useCartStore((state) => state.addItem);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const data = await client.fetch<Product[]>(PRODUCTS_QUERY);
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProducts();
+  }, []);
+
+  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({
+      id: product._id,
+      title: product.title,
+      offerPrice: product.offerPrice,
+    });
+    toast.success('Producto agregado exitosamente');
+  };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <h3 className="text-2xl font-bold text-[#0a2540] mb-8">Productos Destacados</h3>
+        <div className="flex items-center justify-center">
+          <p className="text-gray-500">Cargando productos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <h3 className="text-2xl font-bold text-[#0a2540] mb-8">Productos Destacados</h3>
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-12">
+          <p className="text-lg text-gray-600 mb-2">No hay productos disponibles</p>
+          <p className="text-sm text-gray-500">Agrega productos desde el Sanity Studio</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-12">
       <h3 className="text-2xl font-bold text-[#0a2540] mb-8">Productos Destacados</h3>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {products.map((product) => (
           <div
-            key={product.id}
+            key={product._id}
             className="flex flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
           >
-            {/* Image Placeholder */}
-            <div className="mb-4 h-32 w-full rounded bg-gray-200" />
-            
-            {/* Product Title */}
-            <h4 className="mb-2 text-sm font-semibold text-[#0a2540] line-clamp-2">
-              {product.title}
-            </h4>
-            
-            {/* Prices */}
-            <div className="mb-4 flex items-center gap-2">
-              <span className="text-sm text-gray-400 line-through">
-                ${product.originalPrice}
-              </span>
-              <span className="text-lg font-bold text-[#ff5500]">
-                ${product.offerPrice}
-              </span>
-            </div>
+            <Link href={`/product/${product._id}`} className="block">
+              {/* Image */}
+              {product.image ? (
+                <div className="mb-4 h-32 w-full overflow-hidden rounded bg-gray-100">
+                  <img
+                    src={urlFor(product.image).width(300).height(200).url()}
+                    alt={product.title}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="mb-4 h-32 w-full rounded bg-gray-200" />
+              )}
+              
+              {/* Product Title */}
+              <h4 className="mb-2 text-sm font-semibold text-[#0a2540] line-clamp-2">
+                {product.title}
+              </h4>
+              
+              {/* Prices */}
+              <div className="mb-4 flex items-center gap-2">
+                <span className="text-sm text-gray-400 line-through">
+                  ${product.normalPrice}
+                </span>
+                <span className="text-lg font-bold text-[#ff5500]">
+                  ${product.offerPrice}
+                </span>
+              </div>
+            </Link>
             
             {/* Add Button */}
-            <button className="mt-auto flex items-center justify-center gap-2 rounded-full bg-[#0a2540] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#0a2540]/80">
+            <button 
+              onClick={(e) => handleAddToCart(e, product)}
+              className="mt-auto flex items-center justify-center gap-2 rounded-full bg-[#0a2540] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#0a2540]/80"
+            >
               <ShoppingCart className="h-4 w-4" />
               Agregar
             </button>

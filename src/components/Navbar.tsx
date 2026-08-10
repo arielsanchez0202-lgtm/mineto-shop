@@ -1,6 +1,12 @@
+'use client';
+
 import { Search, User, ShoppingCart } from 'lucide-react';
+import { useCartStore } from '@/store/cartStore';
 
 export default function Navbar() {
+  const { items, openCart } = useCartStore();
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <div className="sticky top-0 z-50 bg-[#0a2540]">
       {/* Main Navbar */}
@@ -29,9 +35,17 @@ export default function Navbar() {
               <User className="h-5 w-5" />
               <span className="hidden sm:inline text-sm">Usuario</span>
             </button>
-            <button className="flex items-center gap-2 rounded-full bg-[#ff5500] px-4 py-2 text-white transition-colors hover:bg-[#e64d00]">
+            <button 
+              onClick={openCart}
+              className="relative flex items-center gap-2 rounded-full bg-[#ff5500] px-4 py-2 text-white transition-colors hover:bg-[#e64d00]"
+            >
               <ShoppingCart className="h-5 w-5" />
               <span className="hidden sm:inline text-sm">Carrito</span>
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-[#ff5500]">
+                  {totalItems}
+                </span>
+              )}
             </button>
           </div>
         </div>
