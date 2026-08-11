@@ -12,7 +12,14 @@ import config from '../../../../sanity.config'
 
 export const dynamic = 'force-static'
 
-export { metadata, viewport } from 'next-sanity/studio'
+export { metadata } from 'next-sanity/studio'
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+}
 
 export default function StudioPage() {
   return <NextStudio config={config} />

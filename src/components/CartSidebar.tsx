@@ -1,6 +1,6 @@
 'use client';
 
-import { X, Plus, Minus, Trash2, MessageCircle, Truck } from 'lucide-react';
+import { X, Plus, Minus, Trash2, MessageCircle, Truck, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 
 export default function CartSidebar() {
@@ -14,7 +14,7 @@ export default function CartSidebar() {
   const progressPercentage = Math.min(100, (subtotal / freeShippingThreshold) * 100);
 
   const handleCheckout = () => {
-    const phoneNumber = '51999999999'; // Placeholder - reemplazar con número real
+    const phoneNumber = '51989090122';
     
     if (items.length === 0) {
       alert('El carrito está vacío');
@@ -85,21 +85,21 @@ export default function CartSidebar() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="rounded-full bg-gray-100 p-1 hover:bg-gray-200 transition-colors"
+                        className="rounded-full bg-gray-100 p-2 min-h-[44px] min-w-[44px] hover:bg-gray-200 transition-colors active:scale-95"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
                       <span className="w-8 text-center font-semibold">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="rounded-full bg-gray-100 p-1 hover:bg-gray-200 transition-colors"
+                        className="rounded-full bg-gray-100 p-2 min-h-[44px] min-w-[44px] hover:bg-gray-200 transition-colors active:scale-95"
                       >
                         <Plus className="h-4 w-4" />
                       </button>
                     </div>
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="text-red-500 hover:text-red-700 transition-colors"
+                      className="text-red-500 hover:text-red-700 transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Search, User, ShoppingCart } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 
@@ -8,17 +9,30 @@ export default function Navbar() {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="sticky top-0 z-50 bg-[#0a2540]">
+    <div className="sticky top-0 z-50 bg-[#0a2540] shadow-md">
       {/* Main Navbar */}
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-4">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <h1 className="text-xl font-bold text-white">Mi Neto Shop</h1>
-          </div>
+          
+          {/* Logo y Nombre Bacán */}
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <img 
+              src="/logo.jpg" 
+              alt="Logo Mi Neto Shop" 
+              className="h-11 w-11 sm:h-14 sm:w-14 rounded-full object-cover border-2 border-[#ff5500]/80 shadow-[0_0_10px_rgba(255,85,0,0.4)]" 
+            />
+            <div className="flex flex-col">
+              <span className="text-xl sm:text-2xl font-black italic tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-[#ff5500]">
+                MI NETO
+              </span>
+              <span className="text-[10px] sm:text-xs font-bold text-[#ffaa00] uppercase tracking-[0.2em] -mt-1">
+                Shop
+              </span>
+            </div>
+          </Link>
 
-          {/* Search Bar */}
-          <div className="flex-1 max-w-2xl">
+          {/* Search Bar - Oculto en móviles */}
+          <div className="hidden md:block flex-1 max-w-2xl ml-4">
             <div className="relative">
               <input
                 type="text"
@@ -31,18 +45,21 @@ export default function Navbar() {
 
           {/* User and Cart Buttons */}
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-white transition-colors hover:bg-white/20">
+            {/* Botón Usuario - Oculto en móviles */}
+            <button className="hidden md:flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-white transition-colors hover:bg-white/20">
               <User className="h-5 w-5" />
-              <span className="hidden sm:inline text-sm">Usuario</span>
+              <span className="text-sm">Usuario</span>
             </button>
+            
+            {/* Botón Carrito */}
             <button 
               onClick={openCart}
-              className="relative flex items-center gap-2 rounded-full bg-[#ff5500] px-4 py-2 text-white transition-colors hover:bg-[#e64d00]"
+              className="relative flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ff5500] to-[#ff7700] p-2 sm:px-4 sm:py-2 text-white transition-transform hover:scale-105 active:scale-95 shadow-lg"
             >
               <ShoppingCart className="h-5 w-5" />
-              <span className="hidden sm:inline text-sm">Carrito</span>
+              <span className="hidden sm:inline text-sm font-semibold">Carrito</span>
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-[#ff5500]">
+                <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-[#ff5500] shadow-sm">
                   {totalItems}
                 </span>
               )}
@@ -52,20 +69,20 @@ export default function Navbar() {
       </div>
 
       {/* Secondary Category Bar */}
-      <div className="border-t border-white/10">
-        <div className="flex gap-6 overflow-x-auto px-4 py-2 scrollbar-hide">
-          <a href="#" className="flex-shrink-0 text-sm text-white/80 hover:text-white transition-colors">
+      <div className="border-t border-white/10 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-6 px-4 py-2 min-w-max">
+          <Link href="/?categoria=audio" className="text-sm text-white/80 hover:text-white transition-colors">
             Audio
-          </a>
-          <a href="#" className="flex-shrink-0 text-sm text-white/80 hover:text-white transition-colors">
+          </Link>
+          <Link href="/?categoria=smartwatches" className="text-sm text-white/80 hover:text-white transition-colors">
             Smartwatches
-          </a>
-          <a href="#" className="flex-shrink-0 text-sm text-white/80 hover:text-white transition-colors">
+          </Link>
+          <Link href="/?categoria=accesorios" className="text-sm text-white/80 hover:text-white transition-colors">
             Accesorios
-          </a>
-          <a href="#" className="flex-shrink-0 text-sm text-[#ff5500] font-semibold hover:text-[#ff6a1a] transition-colors">
-            Ofertas
-          </a>
+          </Link>
+          <Link href="/?categoria=ofertas" className="text-sm text-[#ffaa00] font-bold hover:text-[#ffcc00] transition-colors">
+            Ofertas 🔥
+          </Link>
         </div>
       </div>
     </div>

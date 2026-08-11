@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Hero() {
   return (
     <div className="relative bg-gradient-to-r from-[#0a2540] to-[#1a3a5c] py-16 md:py-24">
@@ -9,9 +11,12 @@ export default function Hero() {
           <p className="text-lg text-white/80 md:text-xl max-w-xl">
             Descubre la mejor tecnología con envíos seguros y pagos protegidos
           </p>
-          <button className="mt-4 rounded-full bg-[#ff5500] px-8 py-3 text-lg font-semibold text-white transition-colors hover:bg-[#e64d00]">
+          <Link 
+            href="#catalogo"
+            className="mt-4 rounded-full bg-[#ff5500] px-8 py-3 text-lg font-semibold text-white transition-colors hover:bg-[#e64d00]"
+          >
             Ver Catálogo
-          </button>
+          </Link>
         </div>
       </div>
     </div>

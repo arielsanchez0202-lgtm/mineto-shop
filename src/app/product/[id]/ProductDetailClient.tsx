@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, ShoppingCart, Star, ChevronDown, ChevronUp, Truck, Shield, DollarSign } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { toast } from 'sonner';
@@ -28,14 +29,16 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ product, imageUrl, relatedProducts = [] }: ProductDetailClientProps) {
+  const router = useRouter();
   const addItem = useCartStore((state) => state.addItem);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
   const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
 
-  const images = product.gallery && product.gallery.length > 0 
-    ? product.gallery 
-    : (imageUrl ? [imageUrl] : []);
+  const images = [
+    imageUrl,
+    ...(product.gallery || [])
+  ].filter((img): img is string => img !== null && img !== undefined && img !== '');
 
   const savings = product.normalPrice - product.offerPrice;
   const ratingStars = product.rating ? Math.round(product.rating) : 0;
@@ -46,7 +49,9 @@ export default function ProductDetailClient({ product, imageUrl, relatedProducts
       title: product.title,
       offerPrice: product.offerPrice,
     });
-    toast.success('Producto agregado exitosamente');
+    const updatedItems = useCartStore.getState().items;
+    const newSubtotal = updatedItems.reduce((sum, item) => sum + item.offerPrice * item.quantity, 0);
+    toast.success(`✅ Agregado. Subtotal actual: $${newSubtotal.toFixed(2)}`);
   };
 
   const renderStars = () => {
@@ -62,13 +67,13 @@ export default function ProductDetailClient({ product, imageUrl, relatedProducts
     <div className="min-h-screen bg-slate-50 pb-24 md:pb-8">
       <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 text-[#0a2540] hover:text-[#ff5500] transition-colors mb-6"
+        <button 
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-3 min-h-[44px] text-sm font-semibold text-[#0a2540] shadow-sm hover:text-[#ff5500] hover:border-[#ff5500]/50 transition-all mb-6 cursor-pointer active:scale-95"
         >
-          <ArrowLeft className="h-5 w-5" />
-          Volver
-        </Link>
+          <ArrowLeft className="h-4 w-4" />
+          Volver al catálogo
+        </button>
 
         {/* Product Details Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -272,7 +277,7 @@ export default function ProductDetailClient({ product, imageUrl, relatedProducts
           </div>
           <button
             onClick={handleAddToCart}
-            className="flex-1 bg-[#ff5500] text-white py-3 rounded-full font-semibold flex items-center justify-center gap-2"
+            className="flex-1 bg-[#ff5500] text-white py-3 min-h-[44px] rounded-full font-semibold flex items-center justify-center gap-2 active:scale-95 transition-transform"
           >
             <ShoppingCart className="h-5 w-5" />
             Agregar al carrito

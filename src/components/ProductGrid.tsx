@@ -58,7 +58,9 @@ export default function ProductGrid() {
       title: product.title,
       offerPrice: product.offerPrice,
     });
-    toast.success('Producto agregado exitosamente');
+    const updatedItems = useCartStore.getState().items;
+    const newSubtotal = updatedItems.reduce((sum, item) => sum + item.offerPrice * item.quantity, 0);
+    toast.success(`✅ Agregado. Subtotal actual: $${newSubtotal.toFixed(2)}`);
   };
 
   if (loading) {
@@ -126,7 +128,7 @@ export default function ProductGrid() {
             {/* Add Button */}
             <button 
               onClick={(e) => handleAddToCart(e, product)}
-              className="mt-auto flex items-center justify-center gap-2 rounded-full bg-[#0a2540] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#0a2540]/80"
+              className="mt-auto flex items-center justify-center gap-2 rounded-full bg-[#0a2540] px-4 py-3 min-h-[44px] text-sm font-semibold text-white transition-colors hover:bg-[#0a2540]/80 active:scale-95"
             >
               <ShoppingCart className="h-4 w-4" />
               Agregar
