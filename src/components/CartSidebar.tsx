@@ -1,17 +1,14 @@
 'use client';
 
-import { X, Plus, Minus, Trash2, MessageCircle, Truck, ShoppingBag } from 'lucide-react';
+import { X, Plus, Minus, Trash2, MessageCircle } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 
 export default function CartSidebar() {
   const { items, isOpen, closeCart, updateQuantity, removeItem, clearCart } = useCartStore();
 
   const subtotal = items.reduce((sum, item) => sum + item.offerPrice * item.quantity, 0);
-  const freeShippingThreshold = 200; // Umbral para envío gratis
-  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
-  const shippingCost = remainingForFreeShipping > 0 ? 15 : 0; // Costo de envío normal
+  const shippingCost = 0; // Envío calculado por WhatsApp
   const total = subtotal + shippingCost;
-  const progressPercentage = Math.min(100, (subtotal / freeShippingThreshold) * 100);
 
   const handleCheckout = () => {
     const phoneNumber = '51989090122';
@@ -22,10 +19,10 @@ export default function CartSidebar() {
     }
 
     const message = items
-      .map((item) => `${item.quantity}x ${item.title} ($${item.offerPrice * item.quantity})`)
+      .map((item) => `${item.quantity}x ${item.title} (S/ ${(item.offerPrice * item.quantity).toFixed(2)})`)
       .join('\n');
     
-    const finalMessage = `Hola, quiero pedir:\n${message}\n\nSubtotal: $${subtotal}\nEnvío: ${shippingCost === 0 ? 'Gratis' : `$${shippingCost}`}\nTotal: $${total}`;
+    const finalMessage = `Hola, quiero pedir:\n${message}\n\nTotal: S/ ${total.toFixed(2)}`;
     const encodedMessage = encodeURIComponent(finalMessage);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     
@@ -37,7 +34,7 @@ export default function CartSidebar() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-[110] flex justify-end">
       {/* Overlay */}
       <div 
         className="fixed inset-0 bg-black/50"
@@ -45,7 +42,7 @@ export default function CartSidebar() {
       />
       
       {/* Sidebar */}
-      <div className="relative h-full w-full max-w-md bg-white shadow-xl flex flex-col">
+      <div className="fixed inset-y-0 right-0 z-[110] w-full max-w-md bg-white shadow-xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between border-b p-4">
           <h2 className="text-xl font-bold text-[#0a2540]">Carrito de Compras</h2>
@@ -70,13 +67,28 @@ export default function CartSidebar() {
                   key={item.id}
                   className="flex items-start gap-4 rounded-lg border border-gray-200 p-4"
                 >
+                  {/* Product Image */}
+                  <div className="w-14 h-14 flex-shrink-0 rounded-lg bg-gray-100 overflow-hidden">
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-400">
+                        IMG
+                      </div>
+                    )}
+                  </div>
+                  
                   {/* Product Info */}
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-[#0a2540] text-sm line-clamp-2">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-[#0a2540] text-sm line-clamp-2 mb-1">
                       {item.title}
                     </h3>
-                    <p className="text-lg font-bold text-[#ff5500]">
-                      ${item.offerPrice}
+                    <p className="text-base font-bold text-[#ff5500]">
+                      S/ {item.offerPrice.toFixed(2)}
                     </p>
                   </div>
                   
@@ -85,16 +97,16 @@ export default function CartSidebar() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="rounded-full bg-gray-100 p-2 min-h-[44px] min-w-[44px] hover:bg-gray-200 transition-colors active:scale-95"
+                        className="rounded-full bg-slate-200 p-2 min-h-[44px] min-w-[44px] hover:bg-slate-300 active:bg-slate-400 transition-colors flex items-center justify-center"
                       >
-                        <Minus className="h-4 w-4" />
+                        <Minus className="h-4 w-4 text-[#0a2540]" />
                       </button>
-                      <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                      <span className="w-8 text-center font-semibold text-[#0a2540]">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="rounded-full bg-gray-100 p-2 min-h-[44px] min-w-[44px] hover:bg-gray-200 transition-colors active:scale-95"
+                        className="rounded-full bg-slate-200 p-2 min-h-[44px] min-w-[44px] hover:bg-slate-300 active:bg-slate-400 transition-colors flex items-center justify-center"
                       >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="h-4 w-4 text-[#0a2540]" />
                       </button>
                     </div>
                     <button
@@ -112,42 +124,11 @@ export default function CartSidebar() {
         
         {/* Footer */}
         {items.length > 0 && (
-          <div className="border-t p-4 space-y-4">
-            {/* Free Shipping Progress */}
-            <div className="bg-gray-50 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Truck className="h-4 w-4 text-[#0a2540]" />
-                <span className="text-sm font-medium text-[#0a2540]">
-                  {remainingForFreeShipping > 0 
-                    ? `Te faltan $${remainingForFreeShipping.toFixed(2)} para envío gratis`
-                    : '¡Envío gratis!'
-                  }
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${progressPercentage}%` }}
-                />
-              </div>
-            </div>
-
+          <div className="border-t p-4 space-y-4 pb-6">
             {/* Price Breakdown */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium">${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Envío</span>
-                <span className={`font-medium ${shippingCost === 0 ? 'text-green-600' : ''}`}>
-                  {shippingCost === 0 ? 'Gratis' : `$${shippingCost.toFixed(2)}`}
-                </span>
-              </div>
-              <div className="flex justify-between text-lg font-bold pt-2 border-t">
-                <span className="text-[#0a2540]">Total</span>
-                <span className="text-[#ff5500]">${total.toFixed(2)}</span>
-              </div>
+            <div className="flex justify-between text-lg font-bold pt-2">
+              <span className="text-[#0a2540]">Total</span>
+              <span className="text-[#ff5500]">S/ {total.toFixed(2)}</span>
             </div>
 
             {/* WhatsApp Button */}
@@ -158,6 +139,7 @@ export default function CartSidebar() {
               <MessageCircle className="h-5 w-5" />
               Comprar vía WhatsApp
             </button>
+            <p className="text-center text-sm text-gray-600">Aceptamos Yape 🟣</p>
           </div>
         )}
       </div>

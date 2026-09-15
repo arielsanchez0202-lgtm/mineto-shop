@@ -5,6 +5,7 @@ export interface CartItem {
   title: string;
   offerPrice: number;
   quantity: number;
+  image?: string;
 }
 
 interface CartStore {

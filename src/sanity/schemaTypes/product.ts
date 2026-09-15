@@ -66,5 +66,19 @@ export const productType = defineType({
       type: 'boolean',
       initialValue: true,
     }),
+    defineField({
+      name: 'category',
+      title: 'Categoría',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Audio', value: 'audio' },
+          { title: 'Smartwatches', value: 'smartwatches' },
+          { title: 'Accesorios', value: 'accesorios' },
+          { title: 'Ofertas', value: 'ofertas' },
+        ],
+      },
+      initialValue: 'audio',
+    }),
   ],
 })

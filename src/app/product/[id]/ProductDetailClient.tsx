@@ -48,10 +48,11 @@ export default function ProductDetailClient({ product, imageUrl, relatedProducts
       id: product._id,
       title: product.title,
       offerPrice: product.offerPrice,
+      image: imageUrl || undefined,
     });
     const updatedItems = useCartStore.getState().items;
     const newSubtotal = updatedItems.reduce((sum, item) => sum + item.offerPrice * item.quantity, 0);
-    toast.success(`✅ Agregado. Subtotal actual: $${newSubtotal.toFixed(2)}`);
+    toast.success(`✅ Agregado. Subtotal actual: S/ ${newSubtotal.toFixed(2)}`);
   };
 
   const renderStars = () => {
@@ -137,15 +138,15 @@ export default function ProductDetailClient({ product, imageUrl, relatedProducts
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <span className="text-xl text-gray-400 line-through">
-                  ${product.normalPrice}
+                  S/ {product.normalPrice.toFixed(2)}
                 </span>
                 <span className="text-3xl md:text-4xl font-bold text-[#ff5500]">
-                  ${product.offerPrice}
+                  S/ {product.offerPrice.toFixed(2)}
                 </span>
               </div>
               {savings > 0 && (
                 <span className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-                  Ahorras ${savings}
+                  Ahorras S/ {savings.toFixed(2)}
                 </span>
               )}
             </div>
@@ -162,7 +163,7 @@ export default function ProductDetailClient({ product, imageUrl, relatedProducts
               </div>
               <div className="flex items-center gap-3">
                 <DollarSign className="h-5 w-5 text-[#0a2540]" />
-                <span className="text-sm text-gray-700">Pago contra entrega / Yape</span>
+                <span className="text-sm text-gray-700">Paga de forma rápida y segura con Yape 🟣</span>
               </div>
             </div>
 
@@ -255,10 +256,10 @@ export default function ProductDetailClient({ product, imageUrl, relatedProducts
                   </h3>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-400 line-through">
-                      ${relatedProduct.normalPrice}
+                      S/ {relatedProduct.normalPrice.toFixed(2)}
                     </span>
                     <span className="text-lg font-bold text-[#ff5500]">
-                      ${relatedProduct.offerPrice}
+                      S/ {relatedProduct.offerPrice.toFixed(2)}
                     </span>
                   </div>
                 </Link>
@@ -273,7 +274,7 @@ export default function ProductDetailClient({ product, imageUrl, relatedProducts
         <div className="flex items-center gap-4">
           <div className="flex-1">
             <p className="text-xs text-gray-500">Precio</p>
-            <p className="text-xl font-bold text-[#ff5500]">${product.offerPrice}</p>
+            <p className="text-xl font-bold text-[#ff5500]">S/ {product.offerPrice.toFixed(2)}</p>
           </div>
           <button
             onClick={handleAddToCart}

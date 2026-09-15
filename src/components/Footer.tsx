@@ -6,19 +6,18 @@ export default function Footer() {
           {/* Copyright */}
           <div className="text-white/80">
             <p className="text-sm">
-              © 2024 Mi Neto Shop. Todos los derechos reservados.
+              © {new Date().getFullYear()} Mi Neto Shop. Todos los derechos reservados.
             </p>
           </div>
 
-          {/* Links */}
+          {/* Contacto WhatsApp */}
           <div className="flex flex-wrap justify-center gap-6 md:justify-end">
-            <a href="#" className="text-sm text-white/80 hover:text-white transition-colors">
-              Políticas
-            </a>
-            <a href="#" className="text-sm text-white/80 hover:text-white transition-colors">
-              Envíos
-            </a>
-            <a href="#" className="text-sm text-white/80 hover:text-white transition-colors">
+            <a
+              href="https://wa.me/51989090122"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-white/80 hover:text-white transition-colors"
+            >
               Contacto
             </a>
           </div>

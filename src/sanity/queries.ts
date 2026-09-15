@@ -1,6 +1,6 @@
 import { defineQuery } from 'next-sanity'
 
-export const PRODUCTS_QUERY = defineQuery(`*[_type == "product"]{
+export const PRODUCTS_QUERY = defineQuery(`*[_type == "product" && (!defined($categoria) || category == $categoria)]{
   _id,
   title,
   normalPrice,
@@ -11,7 +11,8 @@ export const PRODUCTS_QUERY = defineQuery(`*[_type == "product"]{
   rating,
   reviewsCount,
   features,
-  inStock
+  inStock,
+  category
 }`)
 
 export const PRODUCT_BY_ID_QUERY = defineQuery(`*[_type == "product" && _id == $id][0]{

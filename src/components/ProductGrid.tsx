@@ -28,9 +28,14 @@ interface Product {
   reviewsCount?: number;
   features?: string[];
   inStock?: boolean;
+  category?: string;
 }
 
-export default function ProductGrid() {
+interface ProductGridProps {
+  categoria?: string;
+}
+
+export default function ProductGrid({ categoria }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((state) => state.addItem);
@@ -38,7 +43,9 @@ export default function ProductGrid() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const data = await client.fetch<Product[]>(PRODUCTS_QUERY);
+        const data = await client.fetch<Product[]>(PRODUCTS_QUERY, {
+          categoria: categoria || null,
+        });
         setProducts(data);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -48,19 +55,21 @@ export default function ProductGrid() {
     }
 
     fetchProducts();
-  }, []);
+  }, [categoria]);
 
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     e.stopPropagation();
+    const imageUrl = product.image ? urlFor(product.image).width(56).height(56).url() : undefined;
     addItem({
       id: product._id,
       title: product.title,
       offerPrice: product.offerPrice,
+      image: imageUrl,
     });
     const updatedItems = useCartStore.getState().items;
     const newSubtotal = updatedItems.reduce((sum, item) => sum + item.offerPrice * item.quantity, 0);
-    toast.success(`✅ Agregado. Subtotal actual: $${newSubtotal.toFixed(2)}`);
+    toast.success(`✅ Agregado. Subtotal actual: S/ ${newSubtotal.toFixed(2)}`);
   };
 
   if (loading) {
@@ -79,16 +88,27 @@ export default function ProductGrid() {
       <div className="container mx-auto px-4 py-12">
         <h3 className="text-2xl font-bold text-[#0a2540] mb-8">Productos Destacados</h3>
         <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-12">
-          <p className="text-lg text-gray-600 mb-2">No hay productos disponibles</p>
-          <p className="text-sm text-gray-500">Agrega productos desde el Sanity Studio</p>
+          <p className="text-lg font-semibold text-gray-700 mb-2">Estamos renovando nuestro stock</p>
+          <p className="text-sm text-gray-500">Pronto publicaremos nuevas novedades en esta categoría. ¡Vuelve a visitarnos!</p>
         </div>
       </div>
     );
   }
 
+  const getCategoryTitle = () => {
+    if (!categoria) return 'Productos Destacados';
+    const titles: Record<string, string> = {
+      audio: 'Audio',
+      smartwatches: 'Smartwatches',
+      accesorios: 'Accesorios',
+      ofertas: 'Ofertas 🔥',
+    };
+    return titles[categoria] || 'Productos Destacados';
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
-      <h3 className="text-2xl font-bold text-[#0a2540] mb-8">Productos Destacados</h3>
+      <h3 className="text-2xl font-bold text-[#0a2540] mb-8">{getCategoryTitle()}</h3>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {products.map((product) => (
           <div
@@ -115,12 +135,12 @@ export default function ProductGrid() {
               </h4>
               
               {/* Prices */}
-              <div className="mb-4 flex items-center gap-2">
-                <span className="text-sm text-gray-400 line-through">
-                  ${product.normalPrice}
+              <div className="mb-4 flex flex-col items-start gap-0.5">
+                <span className="text-xs text-gray-400 line-through whitespace-nowrap">
+                  S/ {product.normalPrice.toFixed(2)}
                 </span>
-                <span className="text-lg font-bold text-[#ff5500]">
-                  ${product.offerPrice}
+                <span className="text-sm font-bold text-[#ff5500] whitespace-nowrap">
+                  S/ {product.offerPrice.toFixed(2)}
                 </span>
               </div>
             </Link>
