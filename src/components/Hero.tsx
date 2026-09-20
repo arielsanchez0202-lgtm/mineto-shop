@@ -11,8 +11,8 @@ export default function Hero() {
           <p className="text-lg text-white/80 md:text-xl max-w-xl">
             Descubre la mejor tecnología con envíos seguros y pagos protegidos
           </p>
-          <Link 
-            href="#catalogo"
+          <Link
+            href="/#catalogo"
             className="mt-4 rounded-full bg-[#ff5500] px-8 py-3 text-lg font-semibold text-white transition-colors hover:bg-[#e64d00]"
           >
             Ver Catálogo

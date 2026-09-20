@@ -1,17 +1,21 @@
 'use client';
 
-import { Home, Store, MessageCircle } from 'lucide-react';
+import { Home, Store, MessageCircle, Search } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
 
-  const handleCatalogClick = () => {
-    const catalogElement = document.getElementById('catalogo');
-    if (catalogElement) {
-      catalogElement.scrollIntoView({ behavior: 'smooth' });
-    }
+  const handleSearchClick = () => {
+    router.push('/#search');
+    setTimeout(() => {
+      const searchInput = document.getElementById('search-input') as HTMLInputElement;
+      if (searchInput) {
+        searchInput.focus();
+      }
+    }, 100);
   };
 
   return (
@@ -19,7 +23,7 @@ export default function BottomNav() {
       <div className="flex items-center justify-around h-16">
         {/* Inicio */}
         <Link
-          href="/"
+          href="/#catalogo"
           className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
             pathname === '/' ? 'text-[#ff5500]' : 'text-gray-500'
           }`}
@@ -29,12 +33,21 @@ export default function BottomNav() {
         </Link>
 
         {/* Catálogo */}
-        <button
-          onClick={handleCatalogClick}
+        <Link
+          href="/#catalogo"
           className="flex flex-col items-center justify-center flex-1 h-full transition-colors text-gray-500 hover:text-[#ff5500]"
         >
           <Store className="h-6 w-6 mb-1" />
           <span className="text-xs">Catálogo</span>
+        </Link>
+
+        {/* Buscar */}
+        <button
+          onClick={handleSearchClick}
+          className="flex flex-col items-center justify-center flex-1 h-full transition-colors text-gray-500 hover:text-[#ff5500]"
+        >
+          <Search className="h-6 w-6 mb-1" />
+          <span className="text-xs">Buscar</span>
         </button>
 
         {/* WhatsApp */}

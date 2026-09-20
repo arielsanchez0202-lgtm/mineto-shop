@@ -33,9 +33,10 @@ interface Product {
 
 interface ProductGridProps {
   categoria?: string;
+  searchQuery?: string;
 }
 
-export default function ProductGrid({ categoria }: ProductGridProps) {
+export default function ProductGrid({ categoria, searchQuery }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((state) => state.addItem);
@@ -45,6 +46,7 @@ export default function ProductGrid({ categoria }: ProductGridProps) {
       try {
         const data = await client.fetch<Product[]>(PRODUCTS_QUERY, {
           categoria: categoria || null,
+          q: searchQuery || null,
         });
         setProducts(data);
       } catch (error) {
@@ -55,7 +57,7 @@ export default function ProductGrid({ categoria }: ProductGridProps) {
     }
 
     fetchProducts();
-  }, [categoria]);
+  }, [categoria, searchQuery]);
 
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
